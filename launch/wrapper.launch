@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<launch>
+	<master auto="start"/>
+
+	<node pkg="motion_analysis_wrapper" type="wrapper.py" respawn="false" name="motion_analysis_wrapper" output="screen">
+		<rosparam file="$(find motion_analysis_wrapper)/config/parameters.yaml" command="load" />
+	</node>
+</launch>

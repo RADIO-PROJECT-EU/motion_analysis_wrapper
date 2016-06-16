@@ -1,0 +1,7 @@
+human_topic: "/motion_analysis/event/human_transfer"
+oject_topic: "//motion_analysis/event/object_tampered"
+motion_detection_topic: "/motion_detection_sensor_status_publisher/status"
+image_topic: "/usb_cam/image_raw"
+max_seconds: 180
+robot_id: 1
+record_rosbag: True
