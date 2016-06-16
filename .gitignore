@@ -2,4 +2,4 @@
 ~*
 *.swp
 *.bag
-*_log_*
+*.log

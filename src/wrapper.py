@@ -82,7 +82,7 @@ def humanCallback(msg):
     if not wrote_official_human_file and started_walking:
         wrote_official_human_file = True
         dt = datetime.now()
-        with open(logs_path+'official_log_'+datetime.today().strftime("%d-%m-%Y")+'_'+dt.strftime("%H%M%S"),'w+') as f:
+        with open(logs_path+'official_log_'+datetime.today().strftime("%d-%m-%Y")+'_'+dt.strftime("%H%M%S")+'.log','w+') as f:
             f.write('## Robot ID ##\n')
             f.write(str(robot_id)+'\n')
             if got_out_of_bed:
@@ -95,7 +95,7 @@ def humanCallback(msg):
             f.write(str(float(finish3-start_time)/1000000)+' seconds\n')
 
     '''
-    with open(logs_path+'temp_log_'+datetime.today().strftime("%d-%m-%Y"),'a+') as f:
+    with open(logs_path+'temp_log_'+datetime.today().strftime("%d-%m-%Y")+'.log','a+') as f:
         ans = ''
         if msg.event == 0:
             ans = 'Sitting'
