@@ -4,4 +4,4 @@ motion_detection_topic: "/motion_detection_sensor_status_publisher/status"
 image_topic: "/usb_cam/image_raw"
 max_seconds: 180
 robot_id: 1
-record_rosbag: True
+record_rosbag: False
