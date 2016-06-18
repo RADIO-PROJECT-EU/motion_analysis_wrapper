@@ -120,7 +120,7 @@ def objectCallback(msg):
         f.write('## Robot ID ##\n')
         f.write(str(robot_id)+'\n')
         f.write('---\n')
-        f.write('Pill was taken on ' + datetime.today().strftime("%d-%m-%Y")+' '+dt.strftime("%H%M%S"))
+        f.write('Pill was taken on ' + datetime.today().strftime("%d-%m-%Y")+' '+dt.strftime("%H:%M:%S.\n"))
         f.write('---\n')
     print msg.event
     suicide(None)
