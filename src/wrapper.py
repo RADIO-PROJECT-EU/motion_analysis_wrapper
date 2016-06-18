@@ -115,12 +115,21 @@ def objectCallback(msg):
             command = shlex.split(command)
             rosbag_proc = subprocess.Popen(command)
             started_rosbag = True
+    dt = datetime.now()
+    with open(logs_path+'official_log_'+datetime.today().strftime("%d-%m-%Y")+'.log','w+') as f:
+        f.write('## Robot ID ##\n')
+        f.write(str(robot_id)+'\n')
+        f.write('---\n')
+        f.write('Pill was taken on ' + datetime.today().strftime("%d-%m-%Y")+' '+dt.strftime("%H%M%S"))
+        f.write('---\n')
     print msg.event
+    suicide(None)
 
 def suicide(arg):
-    global rosbag_proc
-    print 'Killing rosbag record'
-    rosbag_proc.send_signal(subprocess.signal.SIGINT)
+    global rosbag_proc, record_rosbag
+    if record_rosbag:
+        print 'Killing rosbag record'
+        rosbag_proc.send_signal(subprocess.signal.SIGINT)
     print 'Killing motion_analysis'
     command = "rosnode kill motion_analysis"
     command = shlex.split(command)
