@@ -69,12 +69,12 @@ def humanCallback(msg):
     if msg.event == 0 and not got_out_of_bed:
         got_out_of_bed =  True
         dt = datetime.now()
-        finish1 = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
+        #finish1 = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
+	finish1 = dt.strftime("%H:%M:%S")
     elif msg.event == 1 and not stood_up:
         stood_up = True
         dt = datetime.now()
-        #finish2 = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
-        finish2 = dt.strftime("%H:%M:%S")
+        finish2 = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
     elif msg.event == 2 and not started_walking:
         started_walking = True
         dt = datetime.now()
@@ -91,7 +91,7 @@ def humanCallback(msg):
             #    f.write(str(float(finish1-start_time)/1000000)+' seconds\n')
             if got_out_of_bed:
                 f.write('## WARNING ##\n')
-                f.write('Human was detected out of bed, but not stood up! Potential fall at '+finish2+'!!')                
+                f.write('Human was detected out of bed, but not stood up! Potential fall at '+finish1+'!!\n')                
             if stood_up:
                 f.write('## Lying-Standing ##\n')
                 f.write(str(float(finish2-start_time)/1000000)+' seconds\n')
