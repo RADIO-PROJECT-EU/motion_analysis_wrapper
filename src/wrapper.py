@@ -73,7 +73,8 @@ def humanCallback(msg):
     elif msg.event == 1 and not stood_up:
         stood_up = True
         dt = datetime.now()
-        finish2 = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
+        #finish2 = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
+        finish2 = dt.strftime("%H:%M:%S")
     elif msg.event == 2 and not started_walking:
         started_walking = True
         dt = datetime.now()
@@ -85,11 +86,14 @@ def humanCallback(msg):
         with open(logs_path+'official_log_'+datetime.today().strftime("%d-%m-%Y")+'_'+dt.strftime("%H%M%S")+'.log','w+') as f:
             f.write('## Robot ID ##\n')
             f.write(str(robot_id)+'\n')
+            #if got_out_of_bed:
+            #    f.write('## Lying-Sitting ##\n')
+            #    f.write(str(float(finish1-start_time)/1000000)+' seconds\n')
             if got_out_of_bed:
-                f.write('## Lying-Sitting ##\n')
-                f.write(str(float(finish1-start_time)/1000000)+' seconds\n')
+                f.write('## WARNING ##\n')
+                f.write('Human was detected out of bed, but not stood up! Potential fall at '+finish2+'!!')                
             if stood_up:
-                f.write('## Sitting-Standing ##\n')
+                f.write('## Lying-Standing ##\n')
                 f.write(str(float(finish2-start_time)/1000000)+' seconds\n')
             f.write('## Standing-Walking ##\n')
             f.write(str(float(finish3-start_time)/1000000)+' seconds\n')
