@@ -24,6 +24,7 @@ started_rosbag = False
 record_rosbag = False
 robot_id = 0
 image_topic = ''
+motion_sub = None
 
 def init():
     global human_topic, object_topic, start_time, max_seconds, logs_path, record_rosbag
@@ -41,17 +42,17 @@ def init():
     robot_id = rospy.get_param("~robot_id", 0)
     rospy.Subscriber(human_topic, AnswerWithHeader, humanCallback)
     rospy.Subscriber(object_topic, AnswerWithHeader, objectCallback)
-    rospy.Subscriber(motion_detection_topic, SensorStatusMsg, motionSensorCallback)
+    motion_sub = rospy.Subscriber(motion_detection_topic, SensorStatusMsg, motionSensorCallback)
     rospack = rospkg.RosPack()
     logs_path = rospack.get_path('motion_analysis_wrapper')+'/logs/'
     while not rospy.is_shutdown():
         rospy.spin()
 
 def motionSensorCallback(msg):
-    global got_out_of_bed, start_time
-    if not got_out_of_bed:
-        dt = datetime.now()
-        start_time = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
+    global start_time, motion_sub
+    dt = datetime.now()
+    start_time = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
+    motion_sub.unregister()
 
 def humanCallback(msg):
     global max_seconds, got_out_of_bed, stood_up, started_walking, wrote_official_human_file
@@ -70,7 +71,7 @@ def humanCallback(msg):
         got_out_of_bed =  True
         dt = datetime.now()
         #finish1 = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
-	finish1 = dt.strftime("%H:%M:%S")
+        finish1 = dt.strftime("%H:%M:%S")
     elif msg.event == 1 and not stood_up:
         stood_up = True
         dt = datetime.now()
@@ -96,7 +97,7 @@ def humanCallback(msg):
                 f.write('## Lying-Standing ##\n')
                 f.write(str(float(finish2-start_time)/1000000)+' seconds\n')
             f.write('## Standing-Walking ##\n')
-            f.write(str(float(finish3-start_time)/1000000)+' seconds\n')
+            f.write(str(float(finish3-finish1)/1000000)+' seconds\n')
 
     '''
     with open(logs_path+'temp_log_'+datetime.today().strftime("%d-%m-%Y")+'.log','a+') as f:
