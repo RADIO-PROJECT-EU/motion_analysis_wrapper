@@ -3,6 +3,7 @@ import roslib, rospy
 from motion_analysis.msg import AnswerWithHeader
 from motion_detection_sensor_status_publisher.msg import SensorStatusMsg
 from datetime import datetime
+from time import sleep
 import rospkg
 import subprocess, shlex
 
@@ -30,7 +31,6 @@ def init():
     global human_topic, object_topic, start_time, max_seconds, logs_path, record_rosbag
     global robot_id, image_topic
     dt = datetime.now()
-    start_time = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
     print "start_time = ", start_time
     rospy.init_node('motion_analysis_wrapper')
     human_topic = rospy.get_param("~human_topic", "/motion_analysis/event/human_transfer")
@@ -40,6 +40,9 @@ def init():
     max_seconds = rospy.get_param("~max_seconds", 180)#3 minutes default
     record_rosbag = rospy.get_param("~record_rosbag", False)
     robot_id = rospy.get_param("~robot_id", 0)
+    #before we start listening to the motion_analysis info, let's just wait for the camera image to stabilize)
+    #sleep(6)
+    start_time = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
     rospy.Subscriber(human_topic, AnswerWithHeader, humanCallback)
     rospy.Subscriber(object_topic, AnswerWithHeader, objectCallback)
     motion_sub = rospy.Subscriber(motion_detection_topic, SensorStatusMsg, motionSensorCallback)
@@ -97,7 +100,7 @@ def humanCallback(msg):
                 f.write('## Lying-Standing ##\n')
                 f.write(str(float(finish2-start_time)/1000000)+' seconds\n')
             f.write('## Standing-Walking ##\n')
-            f.write(str(float(finish3-finish1)/1000000)+' seconds\n')
+            f.write(str(float(finish3-finish2)/1000000)+' seconds\n')
 
     '''
     with open(logs_path+'temp_log_'+datetime.today().strftime("%d-%m-%Y")+'.log','a+') as f:
