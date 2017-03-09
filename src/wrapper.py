@@ -1,11 +1,11 @@
 #!/usr/bin/env python
+import rospkg
 import roslib, rospy
+from time import sleep
+import subprocess, shlex
+from datetime import datetime
 from motion_analysis.msg import AnswerWithHeader
 from motion_detection_sensor_status_publisher.msg import SensorStatusMsg
-from datetime import datetime
-from time import sleep
-import rospkg
-import subprocess, shlex
 
 human_topic = ''
 object_topic = ''
@@ -87,20 +87,28 @@ def humanCallback(msg):
     if not wrote_official_human_file and started_walking:
         wrote_official_human_file = True
         dt = datetime.now()
-        with open(logs_path+'official_log_'+datetime.today().strftime("%d-%m-%Y")+'_'+dt.strftime("%H%M%S")+'.log','w+') as f:
-            f.write('## Robot ID ##\n')
-            f.write(str(robot_id)+'\n')
+        with open(logs_path+'official_log_bed_'+datetime.today().strftime("%d-%m-%Y")+'_'+dt.strftime("%H%M%S")+'.csv','w+') as f:
+            #f.write('## Robot ID ##\n')
+            #f.write(str(robot_id)+'\n')
             #if got_out_of_bed:
             #    f.write('## Lying-Sitting ##\n')
             #    f.write(str(float(finish1-start_time)/1000000)+' seconds\n')
-            if got_out_of_bed:
-                f.write('## WARNING ##\n')
-                f.write('Human was detected out of bed, but not stood up! Potential fall at '+finish1+'!!\n')                
+            #if got_out_of_bed:
+            #    f.write('## WARNING ##\n')
+            #    f.write('Human was detected out of bed, but not stood up! Potential fall at '+finish1+'!!\n')                
+            f.write("Lying-Standing time, Standing-Walking time\n")
             if stood_up:
-                f.write('## Lying-Standing ##\n')
-                f.write(str(float(finish2-start_time)/1000000)+' seconds\n')
-            f.write('## Standing-Walking ##\n')
-            f.write(str(float(finish3-finish2)/1000000)+' seconds\n')
+                #f.write('## Lying-Standing ##\n')
+                #f.write(str(float(finish2-start_time)/1000000)+' seconds\n')
+                f.write(str(float(finish2-start_time)/1000000)+",")
+            else:
+                f.write(" ,")
+            if started_walking:
+                #f.write('## Standing-Walking ##\n')
+                #f.write(str(float(finish3-finish2)/1000000)+' seconds\n')
+                f.write(str(float(finish3-finish2)/1000000)+"\n")
+            else:
+                f.write(" \n")
 
     '''
     with open(logs_path+'temp_log_'+datetime.today().strftime("%d-%m-%Y")+'.log','a+') as f:
@@ -124,7 +132,7 @@ def objectCallback(msg):
             rosbag_proc = subprocess.Popen(command)
             started_rosbag = True
     dt = datetime.now()
-    with open(logs_path+'official_log_'+datetime.today().strftime("%d-%m-%Y")+'.log','w+') as f:
+    with open(logs_path+'official_log_pill_'+datetime.today().strftime("%d-%m-%Y")+'.csv','w+') as f:
         f.write('## Robot ID ##\n')
         f.write(str(robot_id)+'\n')
         f.write('---\n')
