@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import rospkg
 import roslib, rospy
 from time import sleep
@@ -132,16 +133,22 @@ def objectCallback(msg):
             rosbag_proc = subprocess.Popen(command)
             started_rosbag = True
     dt = datetime.now()
-    with open(logs_path+'official_log_pill_'+datetime.today().strftime("%d-%m-%Y")+'.csv','w+') as f:
-        f.write('## Robot ID ##\n')
-        f.write(str(robot_id)+'\n')
-        f.write('---\n')
-        f.write('Pill was taken on ' + datetime.today().strftime("%d-%m-%Y")+' '+dt.strftime("%H:%M:%S.\n"))
-        f.write('---\n')
+    first_time = False
+    if not os.path.isfile(logs_path+'official_log_pill_'+datetime.today().strftime("%d-%m-%Y")+'.csv'):
+        first_time = True
+    with open(logs_path+'official_log_pill_'+datetime.today().strftime("%d-%m-%Y")+'.csv','ab+') as f:
+        if first_time:
+            f.write("Pill intake date, Pill intake time\n")
+        f.write(datetime.today().strftime("%d-%m-%Y")+','+dt.strftime("%H:%M:%S\n"))
+        #f.write('## Robot ID ##\n')
+        #f.write(str(robot_id)+'\n')
+        #f.write('---\n')
+        #f.write('Pill was taken on ' + datetime.today().strftime("%d-%m-%Y")+' '+dt.strftime("%H:%M:%S.\n"))
+        #f.write('---\n')
     print msg.event
-    suicide(None)
+    suicide()
 
-def suicide(arg):
+def suicide():
     global rosbag_proc, record_rosbag
     if record_rosbag:
         print 'Killing rosbag record'
