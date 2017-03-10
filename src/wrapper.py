@@ -61,7 +61,7 @@ def motionSensorCallback(msg):
 def humanCallback(msg):
     global max_seconds, got_out_of_bed, stood_up, started_walking, wrote_official_human_file
     global logs_path, finish1, finish2, finish3, rosbag_proc, started_rosbag, record_rosbag, robot_id
-    global image_topic
+    global start_time
     if record_rosbag:
         if not started_rosbag:
             print 'Starting rosbag record'
@@ -101,13 +101,13 @@ def humanCallback(msg):
             if stood_up:
                 #f.write('## Lying-Standing ##\n')
                 #f.write(str(float(finish2-start_time)/1000000)+' seconds\n')
-                f.write(str(float(finish2-start_time)/1000000)+",")
+                f.write(str(float(finish2-start_time) / 1E6)+",")
             else:
                 f.write(" ,")
             if started_walking:
                 #f.write('## Standing-Walking ##\n')
                 #f.write(str(float(finish3-finish2)/1000000)+' seconds\n')
-                f.write(str(float(finish3-finish2)/1000000)+"\n")
+                f.write(str(float(finish3-finish2) / 1E6)+"\n")
             else:
                 f.write(" \n")
 
