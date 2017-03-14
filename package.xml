@@ -40,10 +40,10 @@
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>motion_analysis</build_depend>
+  <build_depend>motion_analysis_msgs</build_depend>
   <build_depend>motion_detection_sensor_status_publisher</build_depend>
   <run_depend>motion_detection_sensor_status_publisher</run_depend>
-  <run_depend>motion_analysis</run_depend>
+  <run_depend>motion_analysis_msgs</run_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

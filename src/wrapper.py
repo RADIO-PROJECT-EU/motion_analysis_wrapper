@@ -5,7 +5,7 @@ import roslib, rospy
 from time import sleep
 import subprocess, shlex
 from datetime import datetime
-from motion_analysis.msg import AnswerWithHeader
+from motion_analysis_msgs.msg import AnswerWithHeader
 from motion_detection_sensor_status_publisher.msg import SensorStatusMsg
 
 human_topic = ''

@@ -4,7 +4,7 @@ project(motion_analysis_wrapper)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED motion_analysis motion_detection_sensor_status_publisher)
+find_package(catkin REQUIRED motion_analysis_msgs motion_detection_sensor_status_publisher)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
