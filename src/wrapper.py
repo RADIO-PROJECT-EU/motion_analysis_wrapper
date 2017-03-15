@@ -27,6 +27,7 @@ record_rosbag = False
 robot_id = 0
 image_topic = ''
 motion_sub = None
+first_time = True
 
 def init():
     global human_topic, object_topic, start_time, max_seconds, logs_path, record_rosbag
@@ -61,7 +62,7 @@ def motionSensorCallback(msg):
 def humanCallback(msg):
     global max_seconds, got_out_of_bed, stood_up, started_walking, wrote_official_human_file
     global logs_path, finish1, finish2, finish3, rosbag_proc, started_rosbag, record_rosbag, robot_id
-    global start_time
+    global start_time, first_time
     if record_rosbag:
         if not started_rosbag:
             print 'Starting rosbag record'
@@ -70,7 +71,9 @@ def humanCallback(msg):
             rosbag_proc = subprocess.Popen(command)
             started_rosbag = True
     #shutdown after max_seconds. To trigger this, we need to get at least one message from motion_analysis
-    rospy.Timer(rospy.Duration(max_seconds), suicide)
+    if first_time:
+        rospy.Timer(rospy.Duration(max_seconds), suicide)
+        first_time = False
     if msg.event == 0 and not got_out_of_bed:
         got_out_of_bed =  True
         dt = datetime.now()
@@ -124,7 +127,11 @@ def humanCallback(msg):
     '''
 
 def objectCallback(msg):
-    global rosbag_proc, started_rosbag, record_rosbag
+    global rosbag_proc, started_rosbag, record_rosbag, first_time
+    if first_time:
+        rospy.Timer(rospy.Duration(max_seconds), suicide)
+        first_time = False
+
     if record_rosbag:
         if not started_rosbag:
             print 'Starting rosbag record'
