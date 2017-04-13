@@ -8,26 +8,26 @@ from datetime import datetime
 from motion_analysis_msgs.msg import AnswerWithHeader
 from motion_detection_sensor_status_publisher.msg import SensorStatusMsg
 
-human_topic = ''
-object_topic = ''
+wrote_official_human_file = False
 motion_detection_topic = ''
-start_time = 0
-max_seconds = 180
-got_out_of_bed = False
-stood_up = False
 started_walking = False
+got_out_of_bed = False
+started_rosbag = False
+record_rosbag = False
+rosbag_proc = None
+max_seconds = 180
+motion_sub = None
+first_time = True
+object_topic = ''
+stood_up = False
+human_topic = ''
+image_topic = ''
+start_time = 0
+logs_path = ''
+robot_id = 0
 finish1 = 0
 finish2 = 0
 finish3 = 0
-wrote_official_human_file = False
-logs_path = ''
-rosbag_proc = None
-started_rosbag = False
-record_rosbag = False
-robot_id = 0
-image_topic = ''
-motion_sub = None
-first_time = True
 
 def init():
     global human_topic, object_topic, start_time, max_seconds, logs_path, record_rosbag
@@ -127,7 +127,7 @@ def humanCallback(msg):
     '''
 
 def objectCallback(msg):
-    global rosbag_proc, started_rosbag, record_rosbag, first_time
+    global rosbag_proc, started_rosbag, record_rosbag, first_time, logs_path
     if first_time:
         rospy.Timer(rospy.Duration(max_seconds), suicide)
         first_time = False
@@ -141,9 +141,10 @@ def objectCallback(msg):
             started_rosbag = True
     dt = datetime.now()
     first_time = False
-    if not os.path.isfile(logs_path+'official_log_pill_'+datetime.today().strftime("%d-%m-%Y")+'.csv'):
+    filename = 'official_log_pill_'+datetime.today().strftime("%d-%m-%Y")+'_'+dt.strftime("%H%M%S")+'.csv'
+    if not os.path.isfile(logs_path + filename):
         first_time = True
-    with open(logs_path+'official_log_pill_'+datetime.today().strftime("%d-%m-%Y")+'.csv','ab+') as f:
+    with open(logs_path + filename,'ab+') as f:
         if first_time:
             f.write("Pill intake date, Pill intake time\n")
         f.write(datetime.today().strftime("%d-%m-%Y")+','+dt.strftime("%H:%M:%S\n"))
