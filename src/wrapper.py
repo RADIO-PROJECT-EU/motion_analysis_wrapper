@@ -20,6 +20,7 @@ motion_sub = None
 first_time = True
 object_topic = ''
 stood_up = False
+starting_dt = ''
 human_topic = ''
 image_topic = ''
 start_time = 0
@@ -31,7 +32,7 @@ finish3 = 0
 
 def init():
     global human_topic, object_topic, start_time, max_seconds, logs_path, record_rosbag
-    global robot_id, image_topic
+    global robot_id, image_topic, starting_dt
     dt = datetime.now()
     print "start_time = ", start_time
     rospy.init_node('motion_analysis_wrapper')
@@ -44,6 +45,7 @@ def init():
     robot_id = rospy.get_param("~robot_id", 0)
     #before we start listening to the motion_analysis info, let's just wait for the camera image to stabilize)
     #sleep(6)
+    starting_dt = datetime.today().strftime("%d-%m-%Y")+'_'+dt.strftime("%H%M%S")
     start_time = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
     rospy.Subscriber(human_topic, AnswerWithHeader, humanCallback)
     rospy.Subscriber(object_topic, AnswerWithHeader, objectCallback)
@@ -62,7 +64,7 @@ def motionSensorCallback(msg):
 def humanCallback(msg):
     global max_seconds, got_out_of_bed, stood_up, started_walking, wrote_official_human_file
     global logs_path, finish1, finish2, finish3, rosbag_proc, started_rosbag, record_rosbag, robot_id
-    global start_time, first_time
+    global start_time, first_time, starting_dt
     if record_rosbag:
         if not started_rosbag:
             print 'Starting rosbag record'
@@ -71,9 +73,8 @@ def humanCallback(msg):
             rosbag_proc = subprocess.Popen(command)
             started_rosbag = True
     #shutdown after max_seconds. To trigger this, we need to get at least one message from motion_analysis
-    if first_time:
-        rospy.Timer(rospy.Duration(max_seconds), suicide)
-        first_time = False
+    #if first_time:
+    #    rospy.Timer(rospy.Duration(max_seconds), suicide)
     if msg.event == 0 and not got_out_of_bed:
         got_out_of_bed =  True
         dt = datetime.now()
@@ -83,15 +84,14 @@ def humanCallback(msg):
         stood_up = True
         dt = datetime.now()
         finish2 = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
-    elif msg.event == 2 and not started_walking:
+    elif msg.event == 2 and not started_walking and stood_up:
         started_walking = True
         dt = datetime.now()
         finish3 = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
     
     if not wrote_official_human_file and started_walking:
-        wrote_official_human_file = True
         dt = datetime.now()
-        with open(logs_path+'official_log_bed_'+datetime.today().strftime("%d-%m-%Y")+'_'+dt.strftime("%H%M%S")+'.csv','w+') as f:
+        with open(logs_path+'official_log_bed_'+starting_dt+'.csv','w+') as f:
             #f.write('## Robot ID ##\n')
             #f.write(str(robot_id)+'\n')
             #if got_out_of_bed:
@@ -100,19 +100,16 @@ def humanCallback(msg):
             #if got_out_of_bed:
             #    f.write('## WARNING ##\n')
             #    f.write('Human was detected out of bed, but not stood up! Potential fall at '+finish1+'!!\n')                
-            f.write("Lying-Standing time, Standing-Walking time\n")
+            if first_time:
+                f.write("Lying-Standing time, Standing-Walking time\n")
+                first_time = False
             if stood_up:
                 #f.write('## Lying-Standing ##\n')
-                #f.write(str(float(finish2-start_time)/1000000)+' seconds\n')
-                f.write(str(float(finish2-start_time) / 1E6)+",")
-            else:
-                f.write(" ,")
-            if started_walking:
+                f.write(str((finish2-start_time) / 1E6)+",")
+            if started_walking and stood_up:
                 #f.write('## Standing-Walking ##\n')
-                #f.write(str(float(finish3-finish2)/1000000)+' seconds\n')
-                f.write(str(float(finish3-finish2) / 1E6)+"\n")
-            else:
-                f.write(" \n")
+                f.write(str((finish3-finish2) / 1E6)+"\n")
+                wrote_official_human_file = True
 
     '''
     with open(logs_path+'temp_log_'+datetime.today().strftime("%d-%m-%Y")+'.log','a+') as f:
