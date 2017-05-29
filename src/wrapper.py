@@ -34,6 +34,8 @@ def init():
     global human_topic, object_topic, start_time, max_seconds, logs_path, record_rosbag
     global robot_id, image_topic, starting_dt
     dt = datetime.now()
+    starting_dt = datetime.today().strftime("%d-%m-%Y")+'_'+dt.strftime("%H%M%S")
+    start_time = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
     print "start_time = ", start_time
     rospy.init_node('motion_analysis_wrapper')
     human_topic = rospy.get_param("~human_topic", "/motion_analysis/event/human_transfer")
@@ -45,8 +47,6 @@ def init():
     robot_id = rospy.get_param("~robot_id", 0)
     #before we start listening to the motion_analysis info, let's just wait for the camera image to stabilize)
     #sleep(6)
-    starting_dt = datetime.today().strftime("%d-%m-%Y")+'_'+dt.strftime("%H%M%S")
-    start_time = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
     rospy.Subscriber(human_topic, AnswerWithHeader, humanCallback)
     rospy.Subscriber(object_topic, AnswerWithHeader, objectCallback)
     motion_sub = rospy.Subscriber(motion_detection_topic, SensorStatusMsg, motionSensorCallback)
