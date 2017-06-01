@@ -89,7 +89,7 @@ def humanCallback(msg):
         dt = datetime.now()
         finish3 = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
     
-    if not wrote_official_human_file and started_walking:
+    if not wrote_official_human_file and stood_up:
         dt = datetime.now()
         with open(logs_path+'official_log_bed_'+starting_dt+'.csv','w+') as f:
             #f.write('## Robot ID ##\n')
