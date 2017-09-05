@@ -59,16 +59,18 @@ def nodeStateCallback(req):
             pass
     elif req.command == 1 and not running:
         current_name = req.name
-        filename = 'official_log_bed_'+current_name+'_'+datetime.today().strftime("%d-%m-%Y")+'_'+dt.strftime("%H%M%S")+'.csv'
+        current_repetition = req.repetition
+        filename = 'official_log_bed_'+current_name+'_'+current_repetition+'_'+datetime.today().strftime("%d-%m-%Y")+'_'+dt.strftime("%H%M%S")+'.csv'
         logs_path = rospack.get_path('motion_analysis_wrapper') + '/logs/' + filename
         human_sub = rospy.Subscriber(human_topic, AnswerWithHeader, humanCallback)
         running = True
         with open(logs_path,'ab+') as f:
-            f.write("Sitting-Standing time, Event\n")
+            f.write("Lying-Standing time, Standing-Walking time\n")
         print 'Started motion analysis wrapper (human mode)!'
     elif req.command == 2 and not running:
         current_name = req.name
-        filename = 'official_log_pill_'+current_name+'_'+datetime.today().strftime("%d-%m-%Y")+'_'+dt.strftime("%H%M%S")+'.csv'
+        current_repetition = req.repetition
+        filename = 'official_log_pill_'+current_name+'_'+current_repetition+'_'+datetime.today().strftime("%d-%m-%Y")+'_'+dt.strftime("%H%M%S")+'.csv'
         logs_path = rospack.get_path('motion_analysis_wrapper') + '/logs/' + filename
         object_sub = rospy.Subscriber(object_topic, AnswerWithHeader, objectCallback)
         running = True
