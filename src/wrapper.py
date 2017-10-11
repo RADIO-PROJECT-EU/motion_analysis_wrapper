@@ -90,7 +90,7 @@ def humanCallback(msg):
     elif msg.event == 1 and not stood_up:
         stood_up = True
         finish2 = dt.minute * 60000000 + dt.second * 1000000 + dt.microsecond
-    elif msg.event == 2 and not started_walking and stood_up:
+    elif msg.event == 2 and (not started_walking) and stood_up:
         started_walking = True
         finish3 = dt.minute * 60000000 + dt.second * 1000000 + dt.microsecond
     if stood_up:
