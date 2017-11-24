@@ -10,7 +10,6 @@ from radio_services.srv import InstructionAndStringWithAnswer
 recorded_stand_up = False
 started_walking = False
 got_out_of_bed = False
-first_time = True
 object_sub = None
 object_topic = ''
 stood_up = False
@@ -43,10 +42,15 @@ def init():
 def nodeStateCallback(req):
     global running, sub, logs_path, ros_visual_topic, start_time
     global object_topic, human_topic, human_sub, object_sub
+    global recorded_stand_up, started_walking, got_out_of_bed, stood_up
     dt = datetime.now()
     start_time = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
     if req.command == 0 and running:
         running = False
+        recorded_stand_up = False
+        started_walking = False
+        got_out_of_bed = False
+        stood_up = False
         try:
             human_sub.unregister()
             print 'Stopped motion analysis wrapper!'
